@@ -2,6 +2,7 @@ package student_player;
 
 import boardgame.Move;
 import tablut.TablutBoardState;
+import tablut.TablutMove;
 import tablut.TablutPlayer;
 
 /** A player file submitted by a student. */
@@ -13,7 +14,7 @@ public class StudentPlayer extends TablutPlayer {
      * associate you with your agent. The constructor should do nothing else.
      */
     public StudentPlayer() {
-        super("xxxxxxxxx");
+        super("260635164");
     }
 
     /**
@@ -21,16 +22,16 @@ public class StudentPlayer extends TablutPlayer {
      * object contains the current state of the game, which your agent must use to
      * make decisions.
      */
-    public Move chooseMove(TablutBoardState boardState) {
+    public Move chooseMove(TablutBoardState bs) {
         // You probably will make separate functions in MyTools.
         // For example, maybe you'll need to load some pre-processed best opening
         // strategies...
-        MyTools.getSomething();
+        // MyTools.getSomething();
+    	//TablutMove move = 
+    	TablutMove move = alphaBeta.search(bs, 2, this.getColor());
 
-        // Is random the best you can do?
-        Move myMove = boardState.getRandomMove();
-
+//    	Move move = bs.getRandomMove();
         // Return your move to be processed by the server.
-        return myMove;
+        return move;
     }
 }
