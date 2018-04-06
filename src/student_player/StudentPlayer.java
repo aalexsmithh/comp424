@@ -28,7 +28,8 @@ public class StudentPlayer extends TablutPlayer {
         // strategies...
         // MyTools.getSomething();
     	//TablutMove move = 
-    	TablutMove move = alphaBeta.search(bs, 2, this.getColor());
+    	TablutMove move = alphaBeta.search(bs, 3, this.getColor());
+//    	alphaBeta.evalVerbose(bs, this.player_id);
 
 //    	Move move = bs.getRandomMove();
         // Return your move to be processed by the server.
