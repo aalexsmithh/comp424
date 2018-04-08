@@ -139,12 +139,18 @@ public class noSearch {
 	
 	private static TablutMove defensiveMuscovite(TablutBoardState bs) {
 		final double p = 0.15;
-		int[][] corners = {{0,2},{1,1},{2,0},{6,0},{7,1},{0,8},{8,6},{7,7},{6,8},{2,8},{1,7},{0,6}};
+		int[][] tlCorners = {{0,2},{1,1},{2,0}};
+		int[][] trCorners = {{6,0},{7,1},{0,8}};
+		int[][] blCorners = {{2,8},{1,7},{0,6}};
+		int[][] brCorners = {{8,6},{7,7},{6,8}};
 		int piecesAliveOnCurrentBoard = bs.getNumberPlayerPieces(bs.MUSCOVITE); 
 		int piecesDead = 16;
 		int oldOpponentPieceCount = bs.getNumberPlayerPieces(bs.getOpponent());
+		int oldPiecesDefendingCorner = 0;
 		String reasonForMove = "";
 		TablutMove bestMove = null;
+		
+		oldPiecesDefendingCorner = checkDefenders(bs);
 		
 		for (TablutMove move : bs.getAllLegalMoves()) {
 			boolean newPiecesDefendingCorner = false;
@@ -165,8 +171,11 @@ public class noSearch {
 			}
 			// check if this moves a piece to a defensive corner pos
 			int[] coordAsArray = {move.getEndPosition().x, move.getEndPosition().y};
-			if (in(corners, coordAsArray)) {
-				newPiecesDefendingCorner = true;
+			if (in(tlCorners, coordAsArray) || in(trCorners, coordAsArray) || in(blCorners, coordAsArray) || in(brCorners, coordAsArray)) {
+				int newPiecesDefendingCornerCount = checkDefenders(cloned);
+				if (newPiecesDefendingCornerCount > oldPiecesDefendingCorner) {
+					newPiecesDefendingCorner = true;
+				}
 			}
 			
 			/////// MOVE LOGIC, in reverse order of importance
@@ -194,7 +203,57 @@ public class noSearch {
 			if (newPiecesDefendingCorner && Math.random() > p) {
 				bestMove = move;
 				reasonForMove = "defending the corner"; 
-			}	
+			}
+			
+			// if king moves towards corner, cover that corner asap
+			Coord kingPos = bs.getKingPosition();
+			if (kingPos.x > 4) {
+				if (kingPos.y > 4) {
+					if (in(brCorners, coordAsArray) && Math.random() > p) {
+						bestMove = move;
+						reasonForMove = "defending the bottom right corner";
+					}
+				} else if (kingPos.y < 4) {
+					if (in(trCorners, coordAsArray) && Math.random() > p) {
+						bestMove = move;
+						reasonForMove = "defending the top right corner";
+					}
+				} else {
+					if (in(brCorners, coordAsArray) || in(trCorners, coordAsArray) && Math.random() > p) {
+						bestMove = move;
+						reasonForMove = "defending the right side";
+					}
+				}
+			} else if (kingPos.x < 4) {
+				if (kingPos.y > 4) {
+					if (in(blCorners, coordAsArray) && Math.random() > p) {
+						bestMove = move;
+						reasonForMove = "defending the bottom left corner";
+					}
+				} else if (kingPos.y < 4) {
+					if (in(tlCorners, coordAsArray) && Math.random() > p) {
+						bestMove = move;
+						reasonForMove = "defending the top left corner";
+					}
+				} else {
+					if (in(blCorners, coordAsArray) || in(tlCorners, coordAsArray) && Math.random() > p) {
+						bestMove = move;
+						reasonForMove = "defending the left side";
+					}
+				}
+			} else {
+				if (kingPos.y > 4) {
+					if (in(blCorners, coordAsArray) || in(brCorners, coordAsArray) && Math.random() > p) {
+						bestMove = move;
+						reasonForMove = "defending the bottom side";
+					}
+				} else if (kingPos.y < 4) {
+					if (in(tlCorners, coordAsArray) || in(trCorners, coordAsArray) && Math.random() > p) {
+						bestMove = move;
+						reasonForMove = "defending the top side";
+					}
+				} 
+			}
 		}
 		System.out.println("Chose move " + bestMove.toPrettyString() + " because " + reasonForMove);
 		if (bestMove == null) {
@@ -207,6 +266,21 @@ public class noSearch {
 	
 	private static float offensiveMuscovite(TablutBoardState bs) {
 		return (float) 0;
+	}
+	
+	private static int checkDefenders(TablutBoardState bs) {
+		int[][] tlCorners = {{0,2},{1,1},{2,0}};
+		int[][] trCorners = {{6,0},{7,1},{0,8}};
+		int[][] blCorners = {{2,8},{1,7},{0,6}};
+		int[][] brCorners = {{8,6},{7,7},{6,8}};
+		int defenders = 0;
+		for (Coord myPiece : bs.getPlayerPieceCoordinates()) {
+			int[] coordAsArray = {myPiece.x, myPiece.y};
+			if (in(tlCorners, coordAsArray) || in(trCorners, coordAsArray) || in(blCorners, coordAsArray) || in(brCorners, coordAsArray)) {
+				defenders += 0;
+			}
+		}
+		return defenders;
 	}
 	
 	private static boolean in(int[][] source, int[] search) {
