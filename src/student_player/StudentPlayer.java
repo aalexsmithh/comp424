@@ -26,12 +26,8 @@ public class StudentPlayer extends TablutPlayer {
         // You probably will make separate functions in MyTools.
         // For example, maybe you'll need to load some pre-processed best opening
         // strategies...
-        // MyTools.getSomething();
-    	//TablutMove move = 
-//    	TablutMove move = alphaBeta.search(bs, 3, this.getColor());
-//    	alphaBeta.evalVerbose(bs, this.player_id);
     	TablutMove move = noSearch.search(bs, this.getColor());
-//    	Move move = bs.getRandomMove();
+    	
         // Return your move to be processed by the server.
         return move;
     }
